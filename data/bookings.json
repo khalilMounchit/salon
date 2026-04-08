@@ -1,0 +1,67 @@
+[
+  {
+    "clientName": "fgjhn",
+    "services": [
+      {
+        "name": "Microblading & Glaçage",
+        "duration": 120
+      }
+    ],
+    "date": "2026-04-07T23:00:00.000Z",
+    "timeSlots": "16:30",
+    "totalSlots": 1,
+    "timeRange": "16:30 • 120 min"
+  },
+  {
+    "clientName": "thht",
+    "services": [
+      {
+        "name": "Balayage",
+        "duration": 120
+      }
+    ],
+    "date": "2026-04-07T23:00:00.000Z",
+    "timeSlots": "18:30",
+    "totalSlots": 1,
+    "timeRange": "18:30 • 120 min"
+  },
+  {
+    "clientName": "thht",
+    "services": [
+      {
+        "name": "Balayage",
+        "duration": 120
+      }
+    ],
+    "date": "2026-04-08T23:00:00.000Z",
+    "timeSlots": "14:30",
+    "totalSlots": 1,
+    "timeRange": "14:30 • 120 min"
+  },
+  {
+    "clientName": "thht",
+    "services": [
+      {
+        "name": "Balayage",
+        "duration": 120
+      }
+    ],
+    "date": "2026-04-08T23:00:00.000Z",
+    "timeSlots": "16:30",
+    "totalSlots": 1,
+    "timeRange": "16:30 • 120 min"
+  },
+  {
+    "clientName": "thht",
+    "services": [
+      {
+        "name": "Balayage",
+        "duration": 120
+      }
+    ],
+    "date": "2026-04-08T23:00:00.000Z",
+    "timeSlots": "18:30",
+    "totalSlots": 1,
+    "timeRange": "18:30 • 120 min"
+  }
+]
