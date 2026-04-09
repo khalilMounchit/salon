@@ -42,7 +42,7 @@ export default function BookingForm({
             value={clientName}
             onChange={(event) => setClientName(event.target.value)}
             className="w-full rounded-3xl border border-pink-100 bg-sands px-4 py-4 text-lg text-dark outline-none transition focus:border-rose focus:ring-4 focus:ring-rose/10"
-            placeholder="Jessica"
+            placeholder="votre nom ici"
           />
         </div>
       </div>
