@@ -133,6 +133,12 @@ export default function BookingPage() {
 
       setConfirmed(true);
       
+      // Clear the booking form after successful booking
+      setSelectedServices([]);
+      setSelectedDate('');
+      setSelectedTime('');
+      setClientName('');
+      
       // Send WhatsApp message with booking details
       sendWhatsAppBooking(salonPhoneNumber, bookingDocument);
       

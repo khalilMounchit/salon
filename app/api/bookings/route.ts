@@ -65,3 +65,30 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json(nextBooking, { status: 201 });
 }
+
+export async function DELETE(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const clientName = searchParams.get('clientName');
+  const date = searchParams.get('date');
+  const timeRange = searchParams.get('timeRange');
+
+  const bookings = await readBookings();
+
+  if (!clientName && !date && !timeRange) {
+    // Clear all bookings
+    await writeBookings([]);
+    return NextResponse.json({ message: 'All bookings cleared' }, { status: 200 });
+  }
+
+  // Delete specific booking
+  const filtered = bookings.filter((booking) =>
+    !(booking.clientName === clientName && booking.date === date && booking.timeRange === timeRange)
+  );
+
+  if (filtered.length === bookings.length) {
+    return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+  }
+
+  await writeBookings(filtered);
+  return NextResponse.json({ message: 'Booking deleted' }, { status: 200 });
+}
