@@ -1,41 +1,54 @@
 import type { Service } from './types';
 import { salonStartHour, salonEndHour } from './constants';
+import {
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isBefore,
+  isSameDay,
+  format,
+  getDay,
+  addMinutes,
+  setHours,
+  setMinutes,
+  setSeconds,
+  setMilliseconds
+} from 'date-fns';
 
 export const getToday = (now: Date = new Date()) => {
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return setHours(setMinutes(setSeconds(setMilliseconds(now, 0), 0), 0), 0);
 };
 
-export const buildMonthDays = (now: Date = new Date(), month: number = 3, year: number = 2026, todayOverride?: Date) => {
+export const buildMonthDays = (now: Date, month: number, year: number, todayOverride?: Date) => {
   const today = todayOverride ? getToday(todayOverride) : getToday(now);
-  const monthStart = new Date(year, month, 1);
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  return Array.from({ length: daysInMonth }, (_, idx) => {
-    const date = new Date(year, month, idx + 1);
-    return {
-      label: date.getDate(),
-      value: date.toISOString(),
-      isToday: date.getTime() === today.getTime(),
-      isPast: date < today,
-    };
-  });
+  const monthStart = startOfMonth(new Date(year, month, 1));
+  const monthEnd = endOfMonth(new Date(year, month, 1));
+
+  const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+  return days.map((date) => ({
+    label: parseInt(format(date, 'd'), 10),
+    value: date.toISOString(),
+    isToday: isSameDay(date, today),
+    isPast: isBefore(date, today),
+  }));
 };
 
-export const computeTotalDuration = (selected: Service[]) => selected.reduce((sum, item) => sum + item.duration, 0);
+export const computeTotalDuration = (selected: Array<{ duration: number }>) => selected.reduce((sum, item) => sum + item.duration, 0);
 
 export const generateTimeSlots = (interval: number) => {
   const slots: string[] = [];
-  const stepMillis = interval * 60000;
-  let current = new Date();
-  current.setHours(salonStartHour, 30, 0, 0);
+  let current = setMinutes(setSeconds(setMilliseconds(new Date(), 0), 0), 30);
+  current = setHours(current, salonStartHour);
 
-  const closing = new Date();
-  closing.setHours(salonEndHour, 30, 0, 0);
+  const closing = setMinutes(setSeconds(setMilliseconds(new Date(), 0), 30), 0);
+  const closingTime = setHours(closing, salonEndHour);
 
-  while (current.getTime() + stepMillis <= closing.getTime()) {
-    const hours = current.getHours().toString().padStart(2, '0');
-    const minutes = current.getMinutes().toString().padStart(2, '0');
+  while (isBefore(current, closingTime)) {
+    const hours = format(current, 'HH');
+    const minutes = format(current, 'mm');
     slots.push(`${hours}:${minutes}`);
-    current = new Date(current.getTime() + stepMillis);
+    current = addMinutes(current, interval);
   }
 
   return slots;
@@ -75,9 +88,13 @@ export const sendWhatsAppBooking = (phoneNumber: string, bookingData: {
 }) => {
   const dateObj = new Date(bookingData.date);
   const formattedDate = dateObj.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
-  const servicesList = bookingData.services.map(s => `• ${s.name} (${s.duration} min)`).join('\n');
+  const { end } = parseTimeRange(bookingData.timeRange);
+  const endTime = `${end.getHours().toString().padStart(2, '0')}:${end.getMinutes().toString().padStart(2, '0')}`;
+  const totalDuration = computeTotalDuration(bookingData.services);
+  const durationLabel = formatDuration(totalDuration);
+  const servicesList = bookingData.services.map(s => `• ${s.name} (${formatDuration(s.duration)})`).join('\n');
   
-  const message = `*Confirmation de Réservation* ✨\n\nNom: ${bookingData.clientName}\nDate: ${formattedDate}\nHeure: ${bookingData.timeSlots}\nDurée: ${bookingData.timeRange}\n\nServices:\n${servicesList}\n\nMerci de votre réservation!`;
+  const message = `*Confirmation de Réservation* ✨\n\nNom: ${bookingData.clientName}\nDate: ${formattedDate}\nHeure: ${bookingData.timeSlots} / ${endTime}\nDurée: ${durationLabel}\n\nServices:\n${servicesList}\n\nMerci de votre réservation!`;
   
   const encodedMessage = encodeURIComponent(message);
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
