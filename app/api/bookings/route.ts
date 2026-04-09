@@ -1,7 +1,11 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+import { Redis } from '@upstash/redis';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseTimeRange } from '../../../utils';
+
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
+});
 
 type Booking = {
   clientName: string;
@@ -12,15 +16,13 @@ type Booking = {
   timeRange: string;
 };
 
-const bookPath = path.join(process.cwd(), 'data', 'bookings.json');
-
 const readBookings = async (): Promise<Booking[]> => {
-  const data = await fs.readFile(bookPath, 'utf-8');
-  return JSON.parse(data) as Booking[];
+  const data = await redis.get('bookings');
+  return (data as Booking[]) || [];
 };
 
 const writeBookings = async (bookings: Booking[]) => {
-  await fs.writeFile(bookPath, JSON.stringify(bookings, null, 2), 'utf-8');
+  await redis.set('bookings', bookings);
 };
 
 export async function GET(request: NextRequest) {
