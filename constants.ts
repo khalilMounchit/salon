@@ -29,10 +29,10 @@ export const services: Service[] = [
   { id: 'manucure', name: "Manucure", duration: 60, category: "Nails", image: '/images/manucure.jpg' },
   { id: 'pedicure', name: "Pédicure", duration: 60, category: "Nails", image: '/images/pedicure.png' },
 
-  // Body
+  //Body
   { id: 'epilation-totale', name: "Épilation Totale", duration: 60, category: "Body", popular: true, image: '/images/epilation-totale.jpg' },
 ];
 
 export const salonStartHour = 10;
 export const salonEndHour = 21;
-export const salonPhoneNumber = '212701691575'; // WhatsApp phone number with country code (no + sign)
+export const salonPhoneNumber = '212691422511'; // WhatsApp phone number with country code (no + sign)
